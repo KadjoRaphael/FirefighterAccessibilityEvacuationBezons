@@ -134,7 +134,7 @@ SimulationEvacuationBezons/
 ├── LICENSE
 │
 ├── model/
-│   ├── evacuation_bezons.nlogo     ← script principal commenté
+│   ├── SimulationAccessibilitePompier.nlogo     ← script principal commenté
 │   └── ODD_protocol.md             ← protocole ODD du modèle
 │
 ├── data/
@@ -144,7 +144,7 @@ SimulationEvacuationBezons/
 │   ├── cis_bezons.shp + ...        ← casernes de pompiers
 │   ├── Ecole_ZIP.shp + ...
 │   ├── Entreprises_ZIP.shp + ...
-│   └── sample.asc                  ← raster d'inondation
+│   └── flood.asc                  ← raster d'inondation
 │
 ├── videos/
 │   ├── 01_baseline_evacuation.mp4
@@ -175,7 +175,7 @@ Issus du fichier `data/population_distribution.*`, ces données sont issues du R
 
 ### Données d'inondation
 
-Le raster `sample.asc`, issu de la simulation hydraulique de la Seine, est utilisé pour simuler la progression de la submersion.
+Le raster `flood.asc`, issu de la simulation hydraulique de la Seine, est utilisé pour simuler la progression de la submersion.
 
 ### Casernes de pompiers
 
