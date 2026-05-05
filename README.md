@@ -228,7 +228,7 @@ Ce modèle est issu des travaux suivants. Si vous l’utilisez ou l’adaptez, m
 
 ---
 
-## 📚 Références scientifiques
+## Références scientifiques
 
 | Auteur(s) | Référence complète |
 |-----------|--------------------|
