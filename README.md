@@ -131,11 +131,9 @@ Les agents changent de couleur selon leur état :
 SimulationEvacuationBezons/
 │
 ├── README.md
-├── LICENSE
 │
 ├── model/
-│   ├── SimulationAccessibilitePompier.nlogo     ← script principal commenté
-│   └── ODD_protocol.md             ← protocole ODD du modèle
+│   └── SimulationAccessibilitePompier.nlogo     ← script principal commenté
 │
 ├── data/
 │   ├── road_network_2.shp + (.dbf .prj .shx)
