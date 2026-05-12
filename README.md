@@ -109,19 +109,21 @@ Cliquer dans cet ordre :
 
 ### 4. Lancer la simulation
 
-La simulation s’exécute sur **60 minutes simulées** (1 tick = 60 secondes).
-Les agents changent de couleur selon leur état :
+La simulation s'exécute sur **60 minutes simulées** (1 tick = 60 secondes).
+Les agents changent de couleur selon leur état. À la fin de la simulation, on obtient :
 
 | Couleur | Signification |
 |---------|---------------|
-| 🟤 Marron | Résident non évacué (décision d’évacuer)|
-| ⬜ Gris | Résident attentiste (décision d’attendre) |
+| 🟥 Rouge | Résident ou population toujours exposé |
+| 🟩 Vert | Entreprise en zone inondable |
+| ⚠️ Jaune | École en zone inondable |
 | 🟠 Orange | Piéton en cours d'évacuation |
 | 🔵 Bleu | Agent évacué, en sécurité |
-| 🟣 Magenta | Victime isolée, inaccessible aux secours|
-| 🔴 Rouge | Camion de pompiers en mission |
+| 🟣 Magenta | Victime isolée, inaccessible aux secours |
+| 🚒 Rouge | Camion de pompiers et pompiers à pied en mission |
 | 🩷 Rose | Camion en cours de reroutage |
 | 🟡 Jaune | Abri d'évacuation horizontal |
+| Voie orange | Route en zone inondable |
 
 ---
 
@@ -202,9 +204,9 @@ et la **distribution des temps d'évacuation**. Ces sorties permettent d'analyse
 
 ## Aperçus de simulation
 
-| t = 5 min | t = 20 min | t = 45 min |
-|-----------|------------|------------|
-| *Début de la montée des eaux : les premiers résidents se mettent en mouvement* | *Congestion sur les axes principaux : les camions sont reroutés* | *Zone inondée : victimes isolées en magenta, abris proches de la saturation* |
+| t = 0 min | t = 5 min | t = 20 min | t = 60 min |
+|-----------|------------|------------|------------|
+| *État initial du modèle* | *Début de la montée des eaux : les premiers résidents se mettent en mouvement* | *Congestion sur les axes principaux : les camions sont reroutés* | *État final d'une simulation : zone inondée avec victimes encore exposées en 🟥, routes en orange, entreprises en 🟩 et écoles en ⚠️* |
 
 > 📽️ Voir les vidéos dans le dossier [`videos/`](./videos/)
 > ou dans les versions publiées du dépôt.
