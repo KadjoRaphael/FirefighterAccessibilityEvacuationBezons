@@ -206,6 +206,7 @@ et la **distribution des temps d'évacuation**. Ces sorties permettent d'analyse
 
 | t = 0 min | t = 5 min | t = 20 min | t = 60 min |
 |-----------|------------|------------|------------|
+| <img src="t0.png" width="200"/> | <img src="t5.png" width="200"/> | <img src="t20.png" width="200"/> | <img src="t60.png" width="200"/> |
 | *État initial du modèle* | *Début de la montée des eaux : les premiers résidents se mettent en mouvement* | *Congestion sur les axes principaux : les camions sont reroutés* | *État final d'une simulation : zone inondée avec victimes encore exposées en 🟥, routes en orange, entreprises en 🟩 et écoles en ▲ Jaune* |
 
 > 📽️ Voir les vidéos dans le dossier [`videos/`](./videos/)
@@ -232,7 +233,7 @@ Ce modèle est issu des travaux suivants. Si vous l’utilisez ou l’adaptez, m
 
 | Auteur(s) | Référence complète |
 |-----------|--------------------|
-| Gillet et al. (2023) | Gillet, O., Daudé, E., Saval, A., Caron, C. & Rey-Coyrehourcq, S. (2023). ESCAPE - Simulation à base d'agents pour l'évacuation de populations lors des situations d'urgence. *JFSMA - Journées Francophones sur les Systèmes Multi-Agents*, pp. 128-131. Strasbourg. ⟨halshs-04199760⟩ |
+| Gillet et al. (2023) | Gillet, O., Daudé, E., Saval, A., Caron, C. & Rey-Coyrehourcq, S. (2023). ESCAPE - Simulation à base d'agents pour l'évacuation de populations lors des situations d'urgence. *JFSMA - Journées Francophones sur les Systèmes Multi-Agents*, pp.128-131. Strasbourg. ⟨halshs-04199760⟩ |
 | Bangate (2019) | Bangate, J. (2019). *Modélisation multi-agents d'une crise sismique*. Thèse de doctorat, Université Grenoble Alpes, 216p. ⟨tel-02613082⟩ |
 | Douvinet (2018) | Douvinet, J. (2018). *L'alerte aux crues rapides en France : Compréhension et évaluation d'un processus en mutation*. Habilitation à Diriger des Recherches, Université d'Avignon et des Pays de Vaucluse, 265p. https://shs.hal.science/tel-02502482/ |
 | Alonso Vicario et al. (2020) | Alonso Vicario, S., Mazzoleni, M., Bhamidipati, S., Gharesifard, M., Ridolfi, E., Pandolfo, C. & Alfonso, L. (2020). Unravelling the influence of human behaviour on reducing casualties during flood evacuation. *Hydrological Sciences Journal*, 65(14), 2359–2375. https://doi.org/10.1080/02626667.2020.1810254 |
