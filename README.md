@@ -1,4 +1,4 @@
-# Modèle multi-agents d'évacuation en cas d'inondation urbaine
+# Modèle multi-agents d’accès des pompiers et d’évacuation en cas d’inondation
 ### Application à la commune de Bezons (Val-d'Oise, Île-de-France)
 
 Ce dépôt présente un modèle de simulation multi-agents développé avec NetLogo 6.x. Il permet d’étudier comment les habitants évacuent et comment les secours interviennent lors d’une inondation en zone urbaine dense.
@@ -89,9 +89,9 @@ Voici la description de chaque paramètre disponible :
 **Scénarios what-if**
 
 - `scenario-type` : Scénario de perturbation à activer :
-  - `none` —  crue progressive dans des conditions nominales, servant de référence comparative
-  - `comm-failure` — tous les canaux d'alerte formels (radio, application) sont désactivés, ce qui force le système à fonctionner sans communication institutionnelle
-  - `fast-flood` — montée des eaux accélérées de 50%, simulant un événement de forte intensité à profil de crue rapide.
+  - `none` -  crue progressive dans des conditions nominales, servant de référence comparative
+  - `comm-failure` - tous les canaux d'alerte formels (radio, application) sont désactivés, ce qui force le système à fonctionner sans communication institutionnelle
+  - `fast-flood` - montée des eaux accélérées de 50%, simulant un événement de forte intensité à profil de crue rapide.
 
 ### 3. Charger le modèle
 
@@ -135,10 +135,10 @@ SimulationEvacuationBezons/
 ├── README.md
 │
 ├── model/
-│   └── SimulationAccessibilitePompier.nlogo     ← script principal commenté
+│   └── FirefighterAccessibilitySimulation.nlogo     ← script principal commenté
 │
 ├── data/
-│   ├── road_network_2.shp + (.dbf .prj .shx)
+│   ├── road_network.shp + (.dbf .prj .shx)
 │   ├── shelter_locations.shp + ...
 │   ├── population_distribution.shp + ...
 │   ├── cis_bezons.shp + ...        ← casernes de pompiers
@@ -206,7 +206,7 @@ et la **distribution des temps d'évacuation**. Ces sorties permettent d'analyse
 
 | t = 0 min | t = 5 min | t = 20 min | t = 60 min |
 |-----------|------------|------------|------------|
-| <img src="t0.png" width="200"/> | <img src="t05.png" width="200"/> | <img src="t20.png" width="200"/> | <img src="t60.png" width="200"/> |
+| <img src="Simulation_overviews/t0.png" width="200"/> | <img src="Simulation_overviews/t05.png" width="200"/> | <img src="Simulation_overviews/t20.png" width="200"/> | <img src="Simulation_overviews/t60.png" width="200"/> |
 | *État initial du modèle* | *Début de la montée des eaux : les premiers résidents se mettent en mouvement* | *Congestion sur les axes principaux : les camions sont reroutés* | *État final d'une simulation : zone inondée avec victimes encore exposées en 🟥, routes en orange, entreprises en 🟩 et écoles en ▲ Jaune* |
 
 > 📽️ Voir les vidéos dans le dossier [`videos/`](./videos/)
