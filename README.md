@@ -262,16 +262,16 @@ This model is derived from the following work. If you use or adapt it, please ci
 
 ---
 
-## Scientific References
+## Références scientifiques
 
-| Author(s) | Full Reference |
-|-----------|----------------|
+| Auteur(s) | Référence complète |
+|-----------|--------------------|
 | Alonso Vicario et al. (2020) | Alonso Vicario, S., Mazzoleni, M., Bhamidipati, S., Gharesifard, M., Ridolfi, E., Pandolfo, C. & Alfonso, L. (2020). Unravelling the influence of human behaviour on reducing casualties during flood evacuation. *Hydrological Sciences Journal*, 65(14), 2359–2375. https://doi.org/10.1080/02626667.2020.1810254 |
-| Bangate (2019) | Bangate, J. (2019). *Multi-agent modelling of a seismic crisis*. Doctoral thesis, Université Grenoble Alpes, 216p. ⟨tel-02613082⟩ |
 | Banos, Lang & Marilleau (2015) | Banos, A., Lang, C. & Marilleau, N. (2015). *Agent-Based Spatial Simulation with NetLogo, Volume 1: Introduction and Bases*. ISTE Press – Elsevier, London, 267p. |
-| Banos, Lang & Marilleau (2017) | Banos, A., Lang, C. & Marilleau, N. (2017). *Agent-Based Spatial Simulation with NetLogo, Volume 2: Advanced Concepts*. ISTE Press – Elsevier, London, 226p. |
-| Douvinet (2018) | Douvinet, J. (2018). *Flash flood warning in France: Understanding and evaluating a changing process*. Habilitation thesis, Université d'Avignon et des Pays de Vaucluse, 265p. https://shs.hal.science/tel-02502482/ |
-| Gillet et al. (2023) | Gillet, O., Daudé, E., Saval, A., Caron, C. & Rey-Coyrehourcq, S. (2023). ESCAPE - Agent-based simulation for population evacuation in emergency situations. *JFSMA - French-Speaking Conference on Multi-Agent Systems*, pp.128-131. Strasbourg. ⟨halshs-04199760⟩ |
+| Bangate (2019) | Bangate, J. (2019). *Modélisation multi-agents d'une crise sismique*. Thèse de doctorat, Université Grenoble Alpes, 216p. ⟨tel-02613082⟩ |
+| Banos, Lang & Marilleau (2017) | Banos, A., Lang, C. & Marilleau, N. (2017). *Agent-Based Spatial Simulation with NetLogo, Volume 2: Advanced Concepts*. ISTE Press – Elsevier, London, 226p.|
+| Douvinet (2018) | Douvinet, J. (2018). *L'alerte aux crues rapides en France : Compréhension et évaluation d'un processus en mutation*. Habilitation thesis, Université d'Avignon et des Pays de Vaucluse, 265p. https://shs.hal.science/tel-02502482/ |
+| Gillet et al. (2023) | Gillet, O., Daudé, E., Saval, A., Caron, C. & Rey-Coyrehourcq, S. (2023). ESCAPE - Simulation à base d'agents pour l'évacuation de populations lors des situations d'urgence. *JFSMA - Journées Francophones sur les Systèmes Multi-Agents*, pp.128-131. Strasbourg. ⟨halshs-04199760⟩ |
 | Mostafizi et al. (2017) | Mostafizi, A., Wang, H., Cox, D., Cramer, L. A. & Dong, S. (2017). Agent-based tsunami evacuation modeling of unplanned network disruptions for evidence-driven resource allocation and retrofitting strategies. *Natural Hazards*, 88(3), 1347–1372. https://doi.org/10.1007/s11069-017-2927-y |
 
 ---
