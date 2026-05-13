@@ -3534,11 +3534,16 @@ to go
   ; based on the active improvement flags (A1–A4) and scenario type.
   ; Files are numbered from frame_10001.png onward to guarantee correct
   ; chronological ordering when assembling the video with ffmpeg.
+  ; NOTE FOR USERS: NetLogo saves frames relative to the .nlogo file location.
+  ; The folder "simulation_images_for_videos" must exist in the same directory
+  ; as the .nlogo file. Create it manually before running the simulation.
+  ; If you prefer an absolute path, replace the folder name below with your
+  ; local path, e.g: "C:/Users/YourName/YourProject/simulation_images_for_videos/"
   if record-video? [
-    let frame-name (word "C:/Users/rapha/OneDrive/SimulationPompierNetLogo/Evacuation_Pompiers/FirefighterAccessibilityEvacuationBezons/simulation_images_for_videos/frame_"
+    let frame-name (word "simulation_images_for_videos/frame_"
       (word (10000 + ticks)) ".png")
     carefully [ export-view frame-name ]
-    [ output-print "WARNING: folder missing - check Simulation_images_for_videos exists" ]
+    [ output-print "WARNING: folder missing - check simulation_images_for_videos/ exists next to the .nlogo file" ]
   ]
 end
 
@@ -4004,18 +4009,18 @@ end
 ;
 ; Note: ffmpeg must be installed and accessible from the command line.
 to export-video-script
-  let base-path "C:/Users/rapha/OneDrive/SimulationPompierNetLogo/Evacuation_Pompiers/FirefighterAccessibilityEvacuationBezons/"
-  let bat-file (word base-path "conversion_of_simulation_images_to_video.bat")
+  let base-path ""
+  let bat-file "conversion_of_simulation_images_to_video.bat"
   file-open bat-file
   file-print "@echo off"
   ; Convert frames to video
   file-print (word "ffmpeg -y -framerate 3 -start_number 10001 -i \""
-    base-path "simulation_images_for_videos/frame_%%05d.png\" "
+    "simulation_images_for_videos/frame_%%05d.png\" "
     "-vf \"format=yuv420p,pad=ceil(iw/2)*2:ceil(ih/2)*2\" "
     "-c:v libx264 \""
-    base-path "simulation_images_for_videos.mp4\"")
+    "simulation_images_for_videos.mp4\"")
   ; Delete all PNG files after video is created
-  file-print (word "del /Q \"" base-path "simulation_images_for_videos\\*.png\"")
+  file-print "del /Q \"simulation_images_for_videos\\*.png\""
   file-print "echo Video created and PNG files deleted."
   file-print "pause"
   file-close
