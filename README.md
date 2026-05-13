@@ -21,7 +21,7 @@ Cloner le dépôt et ouvrir le fichier `.nlogo` avec NetLogo 6.x.
 ## Prérequis
 
 - **NetLogo 6.4 ou supérieur** 
-- Extensions incluses par défaut dans NetLogo : `gis`, `csv`, `table`, `vid`
+- Extensions incluses par défaut dans NetLogo : `gis`, `csv`, `table`
 - Système d'exploitation : Windows, macOS ou Linux
 
 ---
@@ -30,7 +30,7 @@ Cloner le dépôt et ouvrir le fichier `.nlogo` avec NetLogo 6.x.
 
 ### 1. Modifier les chemins GIS
 
-Avant toute chose, ouvrez `SimulationAccessibilitePompier.nlogo` et repérez la procédure `read-gis-files`. Remplacez chaque occurrence par le chemin absolu vers le dossier sur votre propre machine. Par exemple :
+Avant toute chose, ouvrez `FirefighterAccessibilitySimulation.nlogo` et repérez la procédure `read-gis-files`. Remplacez chaque occurrence par le chemin absolu vers le dossier sur votre propre machine. Par exemple :
 
 ```
 C:/Users/VotreNom/SimulationEvacuationBezons/data/
@@ -150,8 +150,10 @@ SimulationEvacuationBezons/
 │   ├── 01_baseline_evacuation.mp4
 │   ├── 02_A1_civilian_signals.mp4
 │   ├── 03_A2_shelter_saturation.mp4
-│   ├── 04_full_smart_config.mp4
-│   └── 05_what_if_fast_flood.mp4
+│   ├── 04_A3_priority-index.mp4
+│   ├── 05_fast_flood.mp4
+│   ├── 06_full_smart_config.mp4
+│   └── 07_comm_failure.mp4
 │
 └── results/
     └── simulation_outputs.csv
@@ -206,7 +208,7 @@ et la **distribution des temps d'évacuation**. Ces sorties permettent d'analyse
 
 | t = 0 min | t = 5 min | t = 20 min | t = 60 min |
 |-----------|------------|------------|------------|
-| <img src="Simulation_overviews/t0.png" width="200"/> | <img src="Simulation_overviews/t05.png" width="200"/> | <img src="Simulation_overviews/t20.png" width="200"/> | <img src="Simulation_overviews/t60.png" width="200"/> |
+| <img src="simulation_overviews/t0.png" width="200"/> | <img src="simulation_overviews/t05.png" width="200"/> | <img src="simulation_overviews/t20.png" width="200"/> | <img src="simulation_overviews/t60.png" width="200"/> |
 | *État initial du modèle* | *Début de la montée des eaux : les premiers résidents se mettent en mouvement* | *Congestion sur les axes principaux : les camions sont reroutés* | *État final d'une simulation : zone inondée avec victimes encore exposées en 🟥, routes en orange, entreprises en 🟩 et écoles en ▲ Jaune* |
 
 > 📽️ Voir les vidéos dans le dossier [`videos/`](./videos/)
