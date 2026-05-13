@@ -33,65 +33,60 @@ Cloner le dépôt et ouvrir le fichier `.nlogo` avec NetLogo 6.x.
 Avant toute chose, ouvrez `FirefighterAccessibilitySimulation.nlogo` et repérez la procédure `read-gis-files`. Remplacez chaque occurrence par le chemin absolu vers le dossier sur votre propre machine. Par exemple :
 
 ```
-C:/Users/VotreNom/SFirefighterAccessibilitySimulation/data/
+C:/Users/VotreNom/FirefighterAccessibilitySimulation/data/
 ```
 
 ### 2. Configurer les paramètres (panneau gauche de l'interface)
 
-Voici la description de chaque paramètre disponible :
+Description de chaque paramètre disponible :
 
-**Comportement d'évacuation**
+**Profondeur d'eau et durée d'exposition**
 
-- `immediate_evacuation` : si cette option est activée, les habitants évacuent tout de suite, sans délai. Si elle est désactivée, le temps de réaction est tiré d’une distribution de Rayleigh, adaptée au niveau d’exposition à l’inondation (sigma entre 2 et 15 minutes).
+- `Hc` : seuil de gêne pour les piétons (profondeur d'eau critique), en mètres.
+  Valeur recommandée : 0,5 m (seuil de risque de noyade pour les personnes,
+  [DREAL Centre-Val de Loire](https://www.centre-val-de-loire.developpement-durable.gouv.fr/cartographies-sur-le-risque-inondation-a4620.html)).
+  Au-delà de `1,5 × Hc` (soit 0,75 m), un piéton peut être immobilisé.
 
-- `Rtau1` : paramètre de temps, en secondes, de la distribution de Rayleigh. Il permet de régler le délai moyen de réaction avant l’évacuation.
-
-- `wait-time-min` : durée maximale, en minutes, pendant laquelle un habitant qui attend peut rester inactif avant d’être forcé d’évacuer. Valeur recommandée : entre 5 et 10 minutes.
+- `Tc` : durée maximale d'exposition à l'eau, en secondes, au-delà de laquelle 
+  un agent est considéré en danger grave. Valeur par défaut : 1800 s (30 min).
 
 **Vitesses de déplacement**
 
-- `Ped_Speed` : vitesse de marche des piétons (en m/s). La valeur recommandée est de 1,2 m/s (marche normale). Avec une taille de case d’environ 5 m et un tick de 60 secondes, cela équivaut à environ 14,4 cases parcourues par tick.
+- `Ped_Speed` : vitesse de marche des piétons en m/s. 
+  Valeur recommandée : 1,22 m/s (marche normale).
 
-- `max_speed_firefighters` : vitesse maximale des camions de pompiers (en km/h). Valeur recommandée : `30 km/h` (circulation ralentie en situation de crise urbaine). Cette vitesse diminue automatiquement en fonction de la profondeur de l’eau.
+- `max_speed_firefighters` : vitesse maximale des camions de pompiers en km/h. 
+  Valeur recommandée : 30 km/h (circulation ralentie en situation de crise). 
+  Cette vitesse diminue automatiquement en fonction de la profondeur de l'eau.
 
-- `Hc` : seuil de gêne pour les piétons (profondeur d’eau critique), en mètres. Valeur par défaut : 0,3 m. Au-delà de `1,5 × Hc`, un piéton peut être immobilisé (probabilité de 5% par tick).
+**Délai de décision d'évacuation**
 
-- `Tc` : durée maximale d’exposition à l’eau, en secondes, au-delà de laquelle un agent est considéré en danger grave.
-
-**Canaux d'alerte**
-
-- `comm-channel` : canal d’alerte utilisé. Options disponibles :
-  - `radio` : diffusion massive avec délai fixe, taux de réception de 85%
-  - `app` : alerte ciblée, avec un taux de réception variable selon la zone d’exposition
-  - `word-of-mouth` : propagation locale de l’information entre résidents
-  - `combined` : combinaison des trois canaux (configuration par défaut)
-
-- `alert-delay-min` : délai (en minutes) avant l’émission de l’alerte via la radio ou l’application.
-
-**Améliorations opérationnelles (A1–A4)**
-
-- `a1-civilian-signal?` : **signaux civils vers les pompiers.** les résidents et piétons exposés à l'eau émettent un signal localisé, que les pompiers intègrent dans leur calcul d'itinéraire sous forme de pénalité. Cette stratégie modélise une communication ascendante du terrain vers les secours.
-
-- `a2-shelter-saturation?` : **réorientation en cas d’abri saturé.** Les piétons et les pompiers vérifient la capacité des abris cibles et se redirigent vers des abris disponibles en cas de saturation, modélisant ainsi une gestion dynamique des flux vers les points de refuge.
-
-- `a3-priority-index?` : **priorisation par index d'accessibilité.** Les pompiers adaptent leur stratégie de déploiement des véhicules en fonction d’un indice d’accessibilité. Lorsque cet indice descend sous 70, ils priorisent les victimes situées en zone critique. En dessous de 50, les victimes isolées deviennent prioritaires.
-
-- `a4-traffic-management?` : **gestion active de la saturation du trafic.** Un signal de congestion est propagé. Le poids de la congestion s’ajuste dynamiquement dans le calcul d’itinéraire selon la saturation du réseau, et les pompiers bénéficient d’un passage prioritaire sur les axes saturés.
-
-**Agents civils secondaires**
-
-- `num-parents` : nombre de parents en direction des écoles.
-- `num-workers` : nombre de travailleurs évacués des entreprises.
-- `num-relatives` : nombre de proches rejoignant des zones sèches.
-- `num-buses` : nombre de bus d’évacuation.
-- `num-car-drivers` : Nombre de conducteurs automobiles.
+- `Rtau1` : paramètre de temps, en secondes, de la distribution de Rayleigh. 
+  Il règle le délai moyen de réaction des résidents avant l'évacuation. 
+  Valeur par défaut : 10 s.
 
 **Scénarios what-if**
 
-- `scenario-type` : Scénario de perturbation à activer :
-  - `none` -  crue progressive dans des conditions nominales, servant de référence comparative
+- `scenario-type` : scénario de perturbation à activer :
+  - `none` - crue progressive dans des conditions nominales, servant de référence
   - `comm-failure` - tous les canaux d'alerte formels (radio, application) sont désactivés, ce qui force le système à fonctionner sans communication institutionnelle
-  - `fast-flood` - montée des eaux accélérées de 50%, simulant un événement de forte intensité à profil de crue rapide.
+  - `fast-flood` — montée des eaux accélérée de 50 %, simulant une inondation de forte intensité 
+
+**Stratégies opérationnelles (A1–A4)**
+
+- `a1-civilian-signal?` : signaux civils vers les pompiers.
+- `a2-shelter-saturation?` : réorientation en cas d'abri saturé.
+- `a3-priority-index?` : priorisation par index d'accessibilité.
+- `a4-traffic-management?` : gestion active de la saturation du trafic.
+
+> 💡 La configuration active est visible en bas du panneau gauche 
+> sous **Active Config** (ex: `A3 | none`).
+
+> 🔧 **Paramètres avancés** : D'autres variables internes (canaux d'alerte,
+> nombre de bus, d'agents civils secondaires, etc.) sont configurables 
+> directement dans la procédure `load1` du script NetLogo pour les 
+> utilisateurs souhaitant personnaliser davantage la simulation.
+
 
 ### 3. Charger le modèle
 
@@ -214,14 +209,14 @@ et la **distribution des temps d'évacuation**. Ces sorties permettent d'analyse
 
 | t = 0 min | t = 5 min | t = 20 min | t = 60 min |
 |-----------|------------|------------|------------|
-| <img src="simulation_overviews/t0.png" width="200"/> | <img src="simulation_overviews/t05.png" width="200"/> | <img src="simulation_overviews/t20.png" width="200"/> | <img src="simulation_overviews/t60.png" width="200"/> |
+| <img src="results/screenshots/t0.png" width="200"/> | <img src="results/screenshots/t05.png" width="200"/> | <img src="results/screenshots/t20.png" width="200"/> | <img src="results/screenshots/t60.png" width="200"/> |
 | *État initial du modèle* | *Début de la montée des eaux : les premiers résidents se mettent en mouvement* | *Congestion sur les axes principaux : les camions sont reroutés* | *État final d'une simulation : zone inondée avec victimes encore exposées en 🟥, routes en orange, entreprises en 🟩 et écoles en ▲ Jaune* |
 
 ---
 
 ## 📽️ Vidéos de simulation
 
-Les vidéos sont disponibles dans le dossier [`videos/`](./videos/).
+Les vidéos sont disponibles dans le dossier [`results/videos/`](./results/videos/).
 Chaque vidéo correspond à une configuration spécifique des stratégies opérationnelles :
 
 | Vidéo | `a1-civilian-signal?` | `a2-shelter-saturation?` | `a3-priority-index?` | `a4-traffic-management?` | `scenario-type` |
@@ -234,7 +229,7 @@ Chaque vidéo correspond à une configuration spécifique des stratégies opéra
 | [06_full_smart_config.mp4](./results/videos/06_full_smart_config.mp4) | ✅ | ✅ | ✅ | ✅ | `none` |
 | [07_comm_failure.mp4](./results/videos/07_comm_failure.mp4) | ❌ | ❌ | ❌ | ❌ | `comm-failure` |
 
-Ces 7 scénarios ne sont pas exhaustifs — de nombreuses autres combinaisons peuvent 
+Ces 7 scénarios ne sont pas exhaustifs - de nombreuses autres combinaisons peuvent 
 être testées en activant ou désactivant librement les stratégies A1, A2, A3 et A4, 
 et en choisissant un type de scénario différent (`none`, `comm-failure`, `fast-flood`).
 
@@ -293,12 +288,12 @@ Ce modèle est issu des travaux suivants. Si vous l’utilisez ou l’adaptez, m
 
 | Auteur(s) | Référence complète |
 |-----------|--------------------|
-| Gillet et al. (2023) | Gillet, O., Daudé, E., Saval, A., Caron, C. & Rey-Coyrehourcq, S. (2023). ESCAPE - Simulation à base d'agents pour l'évacuation de populations lors des situations d'urgence. *JFSMA - Journées Francophones sur les Systèmes Multi-Agents*, pp.128-131. Strasbourg. ⟨halshs-04199760⟩ |
-| Bangate (2019) | Bangate, J. (2019). *Modélisation multi-agents d'une crise sismique*. Thèse de doctorat, Université Grenoble Alpes, 216p. ⟨tel-02613082⟩ |
-| Douvinet (2018) | Douvinet, J. (2018). *L'alerte aux crues rapides en France : Compréhension et évaluation d'un processus en mutation*. Habilitation à Diriger des Recherches, Université d'Avignon et des Pays de Vaucluse, 265p. https://shs.hal.science/tel-02502482/ |
 | Alonso Vicario et al. (2020) | Alonso Vicario, S., Mazzoleni, M., Bhamidipati, S., Gharesifard, M., Ridolfi, E., Pandolfo, C. & Alfonso, L. (2020). Unravelling the influence of human behaviour on reducing casualties during flood evacuation. *Hydrological Sciences Journal*, 65(14), 2359–2375. https://doi.org/10.1080/02626667.2020.1810254 |
+| Bangate (2019) | Bangate, J. (2019). *Modélisation multi-agents d'une crise sismique*. Thèse de doctorat, Université Grenoble Alpes, 216p. ⟨tel-02613082⟩ |
 | Banos, Lang & Marilleau (2015) | Banos, A., Lang, C. & Marilleau, N. (2015). *Agent-Based Spatial Simulation with NetLogo, Volume 1: Introduction and Bases*. ISTE Press – Elsevier, London, 267p. |
 | Banos, Lang & Marilleau (2017) | Banos, A., Lang, C. & Marilleau, N. (2017). *Agent-Based Spatial Simulation with NetLogo, Volume 2: Advanced Concepts*. ISTE Press – Elsevier, London, 226p.|
+| Douvinet (2018) | Douvinet, J. (2018). *L'alerte aux crues rapides en France : Compréhension et évaluation d'un processus en mutation*. Habilitation à Diriger des Recherches, Université d'Avignon et des Pays de Vaucluse, 265p. https://shs.hal.science/tel-02502482/ |
+| Gillet et al. (2023) | Gillet, O., Daudé, E., Saval, A., Caron, C. & Rey-Coyrehourcq, S. (2023). ESCAPE - Simulation à base d'agents pour l'évacuation de populations lors des situations d'urgence. *JFSMA - Journées Francophones sur les Systèmes Multi-Agents*, pp.128-131. Strasbourg. ⟨halshs-04199760⟩ |
 | Mostafizi et al. (2017) | Mostafizi, A., Wang, H., Cox, D., Cramer, L. A. & Dong, S. (2017). Agent-based tsunami evacuation modeling of unplanned network disruptions for evidence-driven resource allocation and retrofitting strategies. *Natural Hazards*, 88(3), 1347–1372. https://doi.org/10.1007/s11069-017-2927-y |
 
 ---
