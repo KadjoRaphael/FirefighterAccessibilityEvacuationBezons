@@ -1,130 +1,123 @@
-# Modèle multi-agents d’accès des pompiers et d’évacuation en cas d’inondation
-### Application à la commune de Bezons (Val-d'Oise, Île-de-France)
+# Multi-Agent Model of Firefighter Access and Evacuation in the Event of Flooding
+### Application to the Municipality of Bezons (Val-d'Oise, Île-de-France)
 
-Ce dépôt présente un modèle de simulation multi-agents développé avec NetLogo 6.x. Il permet d’étudier comment les habitants évacuent et comment les secours interviennent lors d’une inondation en zone urbaine dense.
+This repository presents a multi-agent simulation model developed with NetLogo 6.x. It enables the study of how residents evacuate and how emergency services respond during a flood in a dense urban area.
 
-Le modèle a été conçu à partir du cas de la commune de Bezons (dans le Val-d’Oise), mais il peut être adapté à d’autres villes exposées à des risques d’inondation.
+The model was designed based on the municipality of Bezons (in the Val-d'Oise department), but can be adapted to other cities exposed to flood risk.
 
-Il prend en compte des comportements réalistes des habitants, comme le temps de réaction, le choix du moyen de transport ou le stress face à la montée de l’eau. Il intègre aussi une représentation détaillée du réseau routier, des camions de pompiers, et permet de tester différentes stratégies pour améliorer l’efficacité des secours.
-
-
----
-
-## Démarrage rapide
-
-Cloner le dépôt et ouvrir le fichier `.nlogo` avec NetLogo 6.x.
-
-> ⚠️ **N’ouvrez pas ce fichier avec une version de NetLogo inférieure à 6.** Certaines fonctionnalités risquent d’être perdues.
+It incorporates realistic resident behaviours such as reaction time, transport mode choice, and stress responses to rising water. It also includes a detailed representation of the road network, fire trucks, and allows testing of different strategies to improve the effectiveness of emergency response.
 
 ---
 
-## Prérequis
+## Quick Start
 
-- **NetLogo 6.4 ou supérieur** 
-- Extensions incluses par défaut dans NetLogo : `gis`, `csv`, `table`
-- Système d'exploitation : Windows, macOS ou Linux
+Clone the repository and open the `.nlogo` file with NetLogo 6.x.
+
+> ⚠️ **Do not open this file with a version of NetLogo earlier than 6.** Some features may be lost.
 
 ---
 
-## Instructions d'utilisation
+## Prerequisites
 
-### 1. Modifier les chemins GIS
+- **NetLogo 6.4 or higher**
+- Extensions included by default in NetLogo: `gis`, `csv`, `table`
+- Operating system: Windows, macOS or Linux
 
-Avant toute chose, ouvrez `FirefighterAccessibilitySimulation.nlogo` et repérez la procédure `read-gis-files`. Remplacez chaque occurrence par le chemin absolu vers le dossier sur votre propre machine. Par exemple :
+---
+
+## Instructions
+
+### 1. Update GIS Paths
+
+First, open `FirefighterAccessibilitySimulation.nlogo` and locate the `read-gis-files` procedure. Replace each occurrence with the absolute path to the `data/` folder on your own machine. For example:
 
 ```
-C:/Users/VotreNom/FirefighterAccessibilitySimulation/data/
+C:/Users/YourName/FirefighterAccessibilitySimulation/data/
 ```
 
-### 2. Configurer les paramètres (panneau gauche de l'interface)
+### 2. Configure Parameters (Left Panel of the Interface)
 
-Description de chaque paramètre disponible :
+Description of each available parameter:
 
-**Profondeur d'eau et durée d'exposition**
+**Water Depth and Exposure Duration**
 
-- `Hc` : seuil de gêne pour les piétons (profondeur d'eau critique), en mètres.
-  Valeur recommandée : 0,5 m (seuil de risque de noyade pour les personnes,
+- `Hc`: pedestrian discomfort threshold (critical water depth), in metres.
+  Recommended value: 0.5 m (drowning risk threshold for people,
   [DREAL Centre-Val de Loire](https://www.centre-val-de-loire.developpement-durable.gouv.fr/cartographies-sur-le-risque-inondation-a4620.html)).
-  Au-delà de `1,5 × Hc` (soit 0,75 m), un piéton peut être immobilisé.
+  Beyond `1.5 × Hc` (i.e. 0.75 m), a pedestrian may be immobilised.
 
-- `Tc` : durée maximale d'exposition à l'eau, en secondes, au-delà de laquelle 
-  un agent est considéré en danger grave. Valeur par défaut : 1800 s (30 min).
+- `Tc`: maximum water exposure duration, in seconds, beyond which an agent is considered at serious risk. Default value: 1800 s (30 min).
 
-**Vitesses de déplacement**
+**Movement Speeds**
 
-- `Ped_Speed` : vitesse de marche des piétons en m/s. 
-  Valeur recommandée : 1,22 m/s (marche normale).
+- `Ped_Speed`: pedestrian walking speed in m/s.
+  Recommended value: 1.22 m/s (normal walking pace).
 
-- `max_speed_firefighters` : vitesse maximale des camions de pompiers en km/h. 
-  Valeur recommandée : 30 km/h (circulation ralentie en situation de crise). 
-  Cette vitesse diminue automatiquement en fonction de la profondeur de l'eau.
+- `max_speed_firefighters`: maximum speed of fire trucks in km/h.
+  Recommended value: 30 km/h (reduced speed in crisis conditions).
+  This speed automatically decreases based on water depth.
 
-**Délai de décision d'évacuation**
+**Evacuation Decision Delay**
 
-- `Rtau1` : paramètre de temps, en secondes, de la distribution de Rayleigh. 
-  Il règle le délai moyen de réaction des résidents avant l'évacuation. 
-  Valeur par défaut : 10 s.
+- `Rtau1`: time parameter, in seconds, of the Rayleigh distribution.
+  Controls the mean reaction delay of residents before evacuation.
+  Default value: 10 s.
 
-**Scénarios what-if**
+**What-If Scenarios**
 
-- `scenario-type` : scénario de perturbation à activer :
-  - `none` - crue progressive dans des conditions nominales, servant de référence
-  - `comm-failure` - tous les canaux d'alerte formels (radio, application) sont désactivés, ce qui force le système à fonctionner sans communication institutionnelle
-  - `fast-flood` — montée des eaux accélérée de 50 %, simulant une inondation de forte intensité 
+- `scenario-type`: perturbation scenario to activate:
+  - `none` — progressive flood under nominal conditions, used as a reference
+  - `comm-failure` — all formal alert channels (radio, app) are disabled, forcing the system to operate without institutional communication
+  - `fast-flood` — water rise accelerated by 50%, simulating a high-intensity flood event
 
-**Stratégies opérationnelles (A1–A4)**
+**Operational Strategies (A1–A4)**
 
-- `a1-civilian-signal?` : signaux civils vers les pompiers.
-- `a2-shelter-saturation?` : réorientation en cas d'abri saturé.
-- `a3-priority-index?` : priorisation par index d'accessibilité.
-- `a4-traffic-management?` : gestion active de la saturation du trafic.
+- `a1-civilian-signal?`: civilian signals to firefighters.
+- `a2-shelter-saturation?`: rerouting when a shelter is saturated.
+- `a3-priority-index?`: prioritisation by accessibility index.
+- `a4-traffic-management?`: active management of traffic saturation.
 
-> 💡 La configuration active est visible en bas du panneau gauche 
-> sous **Active Config** (ex: `A3 | none`).
+> 💡 The active configuration is displayed at the bottom of the left panel under **Active Config** (e.g. `A3 | none`).
 
-> 🔧 **Paramètres avancés** : D'autres variables internes (canaux d'alerte,
-> nombre de bus, d'agents civils secondaires, etc.) sont configurables 
-> directement dans la procédure `load1` du script NetLogo pour les 
-> utilisateurs souhaitant personnaliser davantage la simulation.
+> 🔧 **Advanced parameters**: Other internal variables (alert channels, number of buses, secondary civilian agents, etc.) can be configured directly in the `load1` procedure of the NetLogo script for users wishing to further customise the simulation.
 
+### 3. Load the Model
 
-### 3. Charger le modèle
+Click in the following order:
 
-Cliquer dans cet ordre :
-
-| Bouton | Action |
+| Button | Action |
 |--------|--------|
-| **Load 1** | charge le réseau routier et les données d’inondation, puis initialise les variables globales|
-| **Load 2** | Charge la population, calcule les itinéraires et génère les flux civils |
-| **Load 3** | charge les casernes et active éventuellement le scénario hypothétique |
-| **GO** | Lance la simulation (durée : 60 minutes simulées) |
+| **Load 1** | Loads the road network and flood data, then initialises global variables |
+| **Load 2** | Loads the population, computes routes and generates civilian flows |
+| **Load 3** | Loads fire stations and optionally activates the what-if scenario |
+| **GO** | Runs the simulation (duration: 60 simulated minutes) |
 
-> Une fois la simulation lancée, un message est envoyé au cours des 5 premières minutes afin d’activer les renforts si les premiers intervenants sont dépassés. 
+> Once the simulation starts, a message is sent within the first 5 minutes to activate reinforcements if the first responders are overwhelmed.
 
-> ℹ️ **Les boutons Load 1, 2 et 3 doivent être cliqués à chaque modification de paramètre.**
-> Sinon, les changements ne seront pas pris en compte.
+> ℹ️ **Load 1, 2 and 3 must be clicked each time a parameter is changed.**
+> Otherwise, changes will not take effect.
 
-### 4. Lancer la simulation
+### 4. Run the Simulation
 
-La simulation s'exécute sur **60 minutes simulées** (1 tick = 60 secondes).
-Les agents changent de couleur selon leur état. À la fin de la simulation, on obtient :
+The simulation runs over **60 simulated minutes** (1 tick = 60 seconds).
+Agents change colour according to their state. At the end of the simulation:
 
-| Couleur | Signification |
-|---------|---------------|
-| 🟥 Rouge | Résident ou population toujours exposé |
-| 🟩 Vert | Entreprise en zone inondable |
-|  ▲ Jaune | École en zone inondable |
-| 🟠 Orange | Piéton en cours d'évacuation |
-| 🔵 Bleu | Agent évacué, en sécurité |
-| 🟣 Magenta | Victime isolée, inaccessible aux secours |
-| 🚒 Rouge | Camion de pompiers et pompiers à pied en mission |
-| 🩷 Rose | Camion en cours de reroutage |
-| 🟡 Jaune | Abri d'évacuation horizontal |
-| Voie orange | Route en zone inondable |
+| Colour | Meaning |
+|--------|---------|
+| 🟥 Red | Resident or population still exposed |
+| 🟩 Green | Business in flood zone |
+| ▲ Yellow | School in flood zone |
+| 🟠 Orange | Pedestrian currently evacuating |
+| 🔵 Blue | Agent evacuated, in safety |
+| 🟣 Magenta | Isolated victim, unreachable by emergency services |
+| 🚒 Red | Fire truck and on-foot firefighters on mission |
+| 🩷 Pink | Fire truck currently rerouting |
+| 🟡 Yellow | Horizontal evacuation shelter |
+| Orange road | Road in flooded zone |
 
 ---
 
-## Structure du dépôt
+## Repository Structure
 
 ```
 FirefighterAccessibilitySimulation/
@@ -157,69 +150,66 @@ FirefighterAccessibilitySimulation/
         ├── 05_fast_flood.mp4
         ├── 06_full_smart_config.mp4
         └── 07_comm_failure.mp4
-
 ```
 
 ---
 
-## Données d'entrée
+## Input Data
 
-### Réseau routier
+### Road Network
 
-Chargé à partir des shapefiles SIG du dossier `data/road_network.*`, ces fichiers proviennent de la BD TOPO de l’IGN et contiennent les attributs de circulation (sens unique ou double sens).
+Loaded from GIS shapefiles in the `data/road_network.*` folder. These files originate from the IGN BD TOPO and include traffic direction attributes (one-way or two-way).
 
-### Abris d'évacuation
+### Evacuation Shelters
 
-Issus du fichier `data/shelter_locations.*`, deux types d’abris sont modélisés : **horizontaux** (`Hor`) pour l’évacuation hors zone inondée, et **verticaux** (`Ver`) pour la mise en hauteur sur place.
+From the `data/shelter_locations.*` file. Two types of shelters are modelled: **horizontal** (`Hor`) for evacuation outside the flooded zone, and **vertical** (`Ver`) for in-place elevation.
 
-### Distribution de population
+### Population Distribution
 
-Issus du fichier `data/population_distribution.*`, ces données sont issues du Recensement INSEE 2020 à l’échelle IRIS et croisées avec la localisation des bâtiments provenant d’OpenStreetMap et de la BD TOPO.
+From `data/population_distribution.*`. These data are derived from the 2020 INSEE Census at the IRIS scale, cross-referenced with building locations from OpenStreetMap and the BD TOPO.
 
-### Données d'inondation
+### Flood Data
 
-Le raster `flood.asc`, issu de la simulation hydraulique de la Seine, est utilisé pour simuler la progression de la submersion.
+The `flood.asc` raster, derived from a Seine hydraulic simulation, is used to simulate the progressive flood inundation.
 
-### Casernes de pompiers
+### Fire Stations
 
-Issues du fichier `data/cis_bezons.*` (Centre d’Incendie et de Secours).
-Si moins de trois casernes sont détectées, le modèle en génère automatiquement à partir des abris secs les plus proches de la zone inondée.
-
-
----
-
-## Ce que vous pouvez apprendre de ce modèle
-
-Les deux indicateurs principaux sont l'**indice d'accessibilité des secours**
-et la **distribution des temps d'évacuation**. Ces sorties permettent d'analyser :
-
-- l'impact des quatre stratégies A1–A4, seules ou combinées, sur le nombre de victimes secourues et les délais d’intervention des pompiers
-
-- l'effet des canaux d'alerte (radio, application, bouche-à-oreille, proximité camion) sur la vitesse de mobilisation des résidents et le taux d'évacuation spontanée
-
-- la robustesse du dispositif face aux perturbations (routes bloquées, montée rapide des eaux, saturation des abris, panne des communications)
-
-- le positionnement optimal des casernes de renfort
-
-- les dynamiques de congestion entre civils et secours, ainsi que leur résolution adaptative
+From the `data/cis_bezons.*` file (Centre d'Incendie et de Secours).
+If fewer than three stations are detected, the model automatically generates additional ones from the nearest dry shelters to the flooded zone.
 
 ---
 
-## Aperçus de simulation
+## What You Can Learn from This Model
+
+The two main indicators are the **firefighter accessibility index** and the **evacuation time distribution**. These outputs allow analysis of:
+
+- The impact of the four strategies A1–A4, individually or combined, on the number of rescued victims and firefighter response delays
+
+- The effect of alert channels (radio, app, word of mouth, truck proximity) on the speed of resident mobilisation and the spontaneous evacuation rate
+
+- The robustness of the response system under disruptions (blocked roads, rapid water rise, shelter saturation, communication failure)
+
+- The optimal positioning of reinforcement fire stations
+
+- Mixed civilian and emergency service congestion dynamics and their adaptive resolution
+
+---
+
+## Simulation Overviews
 
 | t = 0 min | t = 5 min | t = 20 min | t = 60 min |
 |-----------|------------|------------|------------|
 | <img src="results/screenshots/t0.png" width="200"/> | <img src="results/screenshots/t05.png" width="200"/> | <img src="results/screenshots/t20.png" width="200"/> | <img src="results/screenshots/t60.png" width="200"/> |
-| *État initial du modèle* | *Début de la montée des eaux : les premiers résidents se mettent en mouvement* | *Congestion sur les axes principaux : les camions sont reroutés* | *État final d'une simulation : zone inondée avec victimes encore exposées en 🟥, routes en orange, entreprises en 🟩 et écoles en ▲ Jaune* |
+| *Initial state of the model* | *Start of water rise: the first residents begin moving* | *Congestion on main roads: fire trucks are rerouted* | *Final state of a simulation: flooded zone with victims still exposed in 🟥, orange roads, businesses in 🟩 and schools as ▲ Yellow* |
 
 ---
 
-## 📽️ Vidéos de simulation
+## 📽️ Simulation Videos
 
-Les vidéos sont disponibles dans le dossier [`results/videos/`](./results/videos/).
-Chaque vidéo correspond à une configuration spécifique des stratégies opérationnelles :
+Videos are available in the [`results/videos/`](./results/videos/) folder.
+Each video corresponds to a specific configuration of the operational strategies:
 
-| Vidéo | `a1-civilian-signal?` | `a2-shelter-saturation?` | `a3-priority-index?` | `a4-traffic-management?` | `scenario-type` |
+| Video | `a1-civilian-signal?` | `a2-shelter-saturation?` | `a3-priority-index?` | `a4-traffic-management?` | `scenario-type` |
 |-------|:---------------------:|:------------------------:|:--------------------:|:------------------------:|:---------------:|
 | [01_baseline_evacuation.mp4](./results/videos/01_baseline_evacuation.mp4) | ❌ | ❌ | ❌ | ❌ | `none` |
 | [02_A1_civilian_signals.mp4](./results/videos/02_A1_civilian_signals.mp4) | ✅ | ❌ | ❌ | ❌ | `none` |
@@ -229,84 +219,71 @@ Chaque vidéo correspond à une configuration spécifique des stratégies opéra
 | [06_full_smart_config.mp4](./results/videos/06_full_smart_config.mp4) | ✅ | ✅ | ✅ | ✅ | `none` |
 | [07_comm_failure.mp4](./results/videos/07_comm_failure.mp4) | ❌ | ❌ | ❌ | ❌ | `comm-failure` |
 
-Ces 7 scénarios ne sont pas exhaustifs - de nombreuses autres combinaisons peuvent 
-être testées en activant ou désactivant librement les stratégies A1, A2, A3 et A4, 
-et en choisissant un type de scénario différent (`none`, `comm-failure`, `fast-flood`).
+These 7 scenarios are not exhaustive — many other combinations can be tested by freely enabling or disabling strategies A1, A2, A3 and A4, and by choosing a different scenario type (`none`, `comm-failure`, `fast-flood`).
 
-### 🎬 Génération des vidéos de simulation
+### 🎬 Generating Simulation Videos
 
-Les vidéos ont été générées directement depuis NetLogo à l'aide d'une procédure 
-dédiée (`export-video-script`) qui automatise la conversion des captures d'écran 
-en fichier vidéo `.mp4`.
+Videos were generated directly from NetLogo using a dedicated procedure (`export-video-script`) that automates the conversion of screenshots into `.mp4` video files.
 
-### Fonctionnement
+### How It Works
 
-1. **Pendant la simulation**, NetLogo exporte une image `.png` à intervalles 
-   réguliers dans le dossier `simulation_images_for_videos/`.
+1. **During the simulation**, NetLogo exports a `.png` image at regular intervals into the `simulation_images_for_videos/` folder.
 
-2. **À la fin de la simulation**, la procédure `export-video-script` génère 
-   automatiquement un script `.bat` (`conversion_of_simulation_images_to_video.bat`) 
-   qui utilise **ffmpeg** pour assembler les images en vidéo :
-   - Cadence : **3 images par seconde**
-   - Format de sortie : `.mp4` (codec H.264, compatible tous lecteurs)
-   - Les fichiers `.png` sont automatiquement supprimés après conversion.
+2. **At the end of the simulation**, the `export-video-script` procedure automatically generates a `.bat` script (`conversion_of_simulation_images_to_video.bat`) that uses **ffmpeg** to assemble the images into a video:
+   - Frame rate: **3 frames per second**
+   - Output format: `.mp4` (H.264 codec, compatible with all players)
+   - `.png` files are automatically deleted after conversion.
 
-3. **Exécuter le script** : double-cliquer sur 
-   `conversion_of_simulation_images_to_video.bat` pour lancer la conversion.
+3. **Run the script**: double-click `conversion_of_simulation_images_to_video.bat` to launch the conversion.
 
-### Prérequis
+### Prerequisites
 
-- **ffmpeg** doit être installé et accessible depuis la ligne de commande.
-  Téléchargement : [https://ffmpeg.org/download.html](https://ffmpeg.org/download.html)
+- **ffmpeg** must be installed and accessible from the command line.
+  Download: [https://ffmpeg.org/download.html](https://ffmpeg.org/download.html)
 
-> ⚠️ Avant d'utiliser cette procédure, modifier le chemin `base-path` 
-> dans le script pour correspondre à votre installation locale.
+> ⚠️ Before using this procedure, update the `base-path` in the script to match your local installation.
 
-> 💡 Une fois la vidéo générée, **renommer le fichier** selon la configuration 
-> simulée (ex: `01_baseline_evacuation.mp4`, `02_A1_civilian_signals.mp4`, etc.) 
-> avant de lancer une nouvelle simulation, afin d'éviter que la vidéo suivante 
-> n'écrase la précédente.
+> 💡 Once the video is generated, **rename the file** according to the simulated configuration (e.g. `01_baseline_evacuation.mp4`, `02_A1_civilian_signals.mp4`, etc.) before launching a new simulation, to avoid the next video overwriting the previous one.
 
 ---
 
-## Financement et encadrement
+## Funding and Supervision
 
-Ce travail a été réalisé dans le cadre d’une thèse CIFRE menée au Service départemental d’incendie et de secours du Val-d’Oise (SDIS 95) et à l’Université Le Havre Normandie. Cette thèse a été conduite en partenariat avec l’Association nationale de la recherche et de la technologie et le ministère de l’Enseignement supérieur, de la Recherche et de l’Innovation. Il s’inscrit dans une démarche de recherche sur l’analyse, la modélisation et l’anticipation des risques d’inondation et d’incendie de forêt afin d’optimiser la réponse opérationnelle dans les espaces urbains et périurbains du Val‑d’Oise.
-
----
-
-## Publications associées
-
-Ce modèle est issu des travaux suivants. Si vous l’utilisez ou l’adaptez, merci de citer la référence correspondante :
-
-> **KOBENAN, K. R.** (2026). *Analyse multi-risques, prévision et optimisation des interventions des pompiers dans le Val-d’Oise*.
-> [Thèse de doctorat, Université Le Havre Normandie].
+This work was carried out as part of a CIFRE PhD thesis conducted at the Departmental Fire and Rescue Service of Val-d'Oise (SDIS 95) and the University of Le Havre Normandie. The thesis was conducted in partnership with the National Association for Research and Technology (ANRT) and the Ministry of Higher Education, Research and Innovation. It is part of a research programme on the analysis, modelling and anticipation of flood and wildfire risks, with the aim of optimising emergency response in urban and peri-urban areas of the Val-d'Oise.
 
 ---
 
-## Références scientifiques
+## Associated Publications
 
-| Auteur(s) | Référence complète |
-|-----------|--------------------|
+This model is derived from the following work. If you use or adapt it, please cite the corresponding reference:
+
+> **KOBENAN, K. R.** (2026). *Multi-risk analysis, forecasting and optimisation of firefighter interventions in the Val-d'Oise*.
+> [Doctoral thesis, University of Le Havre Normandie].
+
+---
+
+## Scientific References
+
+| Author(s) | Full Reference |
+|-----------|----------------|
 | Alonso Vicario et al. (2020) | Alonso Vicario, S., Mazzoleni, M., Bhamidipati, S., Gharesifard, M., Ridolfi, E., Pandolfo, C. & Alfonso, L. (2020). Unravelling the influence of human behaviour on reducing casualties during flood evacuation. *Hydrological Sciences Journal*, 65(14), 2359–2375. https://doi.org/10.1080/02626667.2020.1810254 |
-| Bangate (2019) | Bangate, J. (2019). *Modélisation multi-agents d'une crise sismique*. Thèse de doctorat, Université Grenoble Alpes, 216p. ⟨tel-02613082⟩ |
+| Bangate (2019) | Bangate, J. (2019). *Multi-agent modelling of a seismic crisis*. Doctoral thesis, Université Grenoble Alpes, 216p. ⟨tel-02613082⟩ |
 | Banos, Lang & Marilleau (2015) | Banos, A., Lang, C. & Marilleau, N. (2015). *Agent-Based Spatial Simulation with NetLogo, Volume 1: Introduction and Bases*. ISTE Press – Elsevier, London, 267p. |
-| Banos, Lang & Marilleau (2017) | Banos, A., Lang, C. & Marilleau, N. (2017). *Agent-Based Spatial Simulation with NetLogo, Volume 2: Advanced Concepts*. ISTE Press – Elsevier, London, 226p.|
-| Douvinet (2018) | Douvinet, J. (2018). *L'alerte aux crues rapides en France : Compréhension et évaluation d'un processus en mutation*. Habilitation à Diriger des Recherches, Université d'Avignon et des Pays de Vaucluse, 265p. https://shs.hal.science/tel-02502482/ |
-| Gillet et al. (2023) | Gillet, O., Daudé, E., Saval, A., Caron, C. & Rey-Coyrehourcq, S. (2023). ESCAPE - Simulation à base d'agents pour l'évacuation de populations lors des situations d'urgence. *JFSMA - Journées Francophones sur les Systèmes Multi-Agents*, pp.128-131. Strasbourg. ⟨halshs-04199760⟩ |
+| Banos, Lang & Marilleau (2017) | Banos, A., Lang, C. & Marilleau, N. (2017). *Agent-Based Spatial Simulation with NetLogo, Volume 2: Advanced Concepts*. ISTE Press – Elsevier, London, 226p. |
+| Douvinet (2018) | Douvinet, J. (2018). *Flash flood warning in France: Understanding and evaluating a changing process*. Habilitation thesis, Université d'Avignon et des Pays de Vaucluse, 265p. https://shs.hal.science/tel-02502482/ |
+| Gillet et al. (2023) | Gillet, O., Daudé, E., Saval, A., Caron, C. & Rey-Coyrehourcq, S. (2023). ESCAPE - Agent-based simulation for population evacuation in emergency situations. *JFSMA - French-Speaking Conference on Multi-Agent Systems*, pp.128-131. Strasbourg. ⟨halshs-04199760⟩ |
 | Mostafizi et al. (2017) | Mostafizi, A., Wang, H., Cox, D., Cramer, L. A. & Dong, S. (2017). Agent-based tsunami evacuation modeling of unplanned network disruptions for evidence-driven resource allocation and retrofitting strategies. *Natural Hazards*, 88(3), 1347–1372. https://doi.org/10.1007/s11069-017-2927-y |
 
 ---
 
-## Auteur
+## Author
 
 **Kadjo Raphael KOBENAN**
-[GitHub](https://github.com/KadjoRaphael)· [contact e-mail : raphael.kobenan@yahoo.fr]
+[GitHub](https://github.com/KadjoRaphael) · [Email: raphael.kobenan@yahoo.fr]
 
 ---
 
 ## Licence
 
-Ce projet est sous licence libre  [MIT](./LICENSE).
-Vous êtes libre de l’utiliser, le modifier et le redistribuer avec attribution.
-
+This project is available under the free [MIT](./LICENSE) licence.
+You are free to use, modify and redistribute it with attribution.
