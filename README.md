@@ -135,30 +135,34 @@ Les agents changent de couleur selon leur état. À la fin de la simulation, on 
 SimulationEvacuationBezons/
 │
 ├── README.md
+├── LICENSE
 │
-├── model/
-│   └── FirefighterAccessibilitySimulation.nlogo     ← script principal commenté
+├── FirefighterAccessibilitySimulation.nlogo
 │
 ├── data/
-│   ├── road_network.shp + (.dbf .prj .shx)
-│   ├── shelter_locations.shp + ...
-│   ├── population_distribution.shp + ...
-│   ├── cis_bezons.shp + ...        ← casernes de pompiers
-│   ├── Ecole_ZIP.shp + ...
-│   ├── Entreprises_ZIP.shp + ...
-│   └── flood.asc                  ← raster d'inondation
-│
-├── videos/
-│   ├── 01_baseline_evacuation.mp4
-│   ├── 02_A1_civilian_signals.mp4
-│   ├── 03_A2_shelter_saturation.mp4
-│   ├── 04_A3_priority-index.mp4
-│   ├── 05_fast_flood.mp4
-│   ├── 06_full_smart_config.mp4
-│   └── 07_comm_failure.mp4
+│   ├── road_network.shp (.dbf .prj .shx)
+│   ├── shelter_locations.shp ...
+│   ├── population_distribution.shp ...
+│   ├── cis_bezons.shp ...
+│   ├── Ecole_ZIP.shp ...
+│   ├── Entreprises_ZIP.shp ...
+│   └── flood.asc
 │
 └── results/
-    └── simulation_outputs.csv
+    ├── screenshots/
+    │   ├── t0.png
+    │   ├── t05.png
+    │   ├── t20.png
+    │   └── t60.png
+    └── videos/
+        ├── 01_baseline_evacuation.mp4
+        ├── 02_A1_civilian_signals.mp4
+        ├── 03_A2_shelter_saturation.mp4
+        ├── 04_A3_priority_index.mp4
+        ├── 05_fast_flood.mp4
+        ├── 06_full_smart_config.mp4
+        └── 07_comm_failure.mp4
+
 ```
 
 ---
