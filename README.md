@@ -104,6 +104,8 @@ Cliquer dans cet ordre :
 | **Load 3** | charge les casernes et active éventuellement le scénario hypothétique |
 | **GO** | Lance la simulation (durée : 60 minutes simulées) |
 
+> Une fois la simulation lancée, un message est envoyé au cours des 5 premières minutes afin d’activer les renforts si les premiers intervenants sont dépassés. 
+
 > ℹ️ **Les boutons Load 1, 2 et 3 doivent être cliqués à chaque modification de paramètre.**
 > Sinon, les changements ne seront pas pris en compte.
 
