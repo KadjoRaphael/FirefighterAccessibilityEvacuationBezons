@@ -256,6 +256,6 @@ Ce modèle est issu des travaux suivants. Si vous l’utilisez ou l’adaptez, m
 
 ## Licence
 
-Ce projet est sous licence libre  [MIT](./LICENSE) / [CC-BY 4.0](./LICENSE).
+Ce projet est sous licence libre  [MIT](./LICENSE).
 Vous êtes libre de l’utiliser, le modifier et le redistribuer avec attribution.
 
