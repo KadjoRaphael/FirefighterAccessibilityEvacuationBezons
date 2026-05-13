@@ -3192,7 +3192,7 @@ to load3
   setup-reinforcement-posts
   trigger-what-if-scenario
   output-print "SETUP COMPLETE (3/3)!"
-  ; Démarre automatiquement l'enregistrement
+  ;Automatically starts video recording
   start-recording
   beep
 end
@@ -3443,7 +3443,7 @@ to go
     ] [ set moving? false ]
   ]
   ask active-peds with [ moving? = true ] [
-    ; Hc = pedestrian discomfort threshold (default: 0.3 m)
+    ; Hc = pedestrian discomfort threshold (default: 0.5 m)
     ; Above 1.5 × Hc: 5% chance of stopping and reverting to decision=2
     if [depth] of patch-here > (Hc * 1.5) [
       if random-float 1 < 0.05 [ set moving? false  set decision 2  stop ] ]
