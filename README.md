@@ -1,5 +1,5 @@
-# Multi-Agent Model of Firefighter Access and Evacuation in the Event of Flooding
-### Application to the Municipality of Bezons (Val-d'Oise, Île-de-France)
+# Multi-agent model for fire service access and evacuation in the event of flooding
+### Application to the municipality of Bezons (Val-d'Oise, Île-de-France)
 
 This repository presents a multi-agent simulation model developed with NetLogo 6.x. It enables the study of how residents evacuate and how emergency services respond during a flood in a dense urban area.
 
