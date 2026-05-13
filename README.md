@@ -33,7 +33,7 @@ Cloner le dépôt et ouvrir le fichier `.nlogo` avec NetLogo 6.x.
 Avant toute chose, ouvrez `FirefighterAccessibilitySimulation.nlogo` et repérez la procédure `read-gis-files`. Remplacez chaque occurrence par le chemin absolu vers le dossier sur votre propre machine. Par exemple :
 
 ```
-C:/Users/VotreNom/SimulationEvacuationBezons/data/
+C:/Users/VotreNom/SFirefighterAccessibilitySimulation/data/
 ```
 
 ### 2. Configurer les paramètres (panneau gauche de l'interface)
@@ -132,7 +132,7 @@ Les agents changent de couleur selon leur état. À la fin de la simulation, on 
 ## Structure du dépôt
 
 ```
-SimulationEvacuationBezons/
+FirefighterAccessibilitySimulation/
 │
 ├── README.md
 ├── LICENSE
@@ -217,8 +217,60 @@ et la **distribution des temps d'évacuation**. Ces sorties permettent d'analyse
 | <img src="simulation_overviews/t0.png" width="200"/> | <img src="simulation_overviews/t05.png" width="200"/> | <img src="simulation_overviews/t20.png" width="200"/> | <img src="simulation_overviews/t60.png" width="200"/> |
 | *État initial du modèle* | *Début de la montée des eaux : les premiers résidents se mettent en mouvement* | *Congestion sur les axes principaux : les camions sont reroutés* | *État final d'une simulation : zone inondée avec victimes encore exposées en 🟥, routes en orange, entreprises en 🟩 et écoles en ▲ Jaune* |
 
-> 📽️ Voir les vidéos dans le dossier [`videos/`](./videos/)
-> ou dans les versions publiées du dépôt.
+---
+
+## 📽️ Vidéos de simulation
+
+Les vidéos sont disponibles dans le dossier [`videos/`](./videos/).
+Chaque vidéo correspond à une configuration spécifique des stratégies opérationnelles :
+
+| Vidéo | `a1-civilian-signal?` | `a2-shelter-saturation?` | `a3-priority-index?` | `a4-traffic-management?` | `scenario-type` |
+|-------|:---------------------:|:------------------------:|:--------------------:|:------------------------:|:---------------:|
+| [01_baseline_evacuation.mp4](./results/videos/01_baseline_evacuation.mp4) | ❌ | ❌ | ❌ | ❌ | `none` |
+| [02_A1_civilian_signals.mp4](./results/videos/02_A1_civilian_signals.mp4) | ✅ | ❌ | ❌ | ❌ | `none` |
+| [03_A2_shelter_saturation.mp4](./results/videos/03_A2_shelter_saturation.mp4) | ❌ | ✅ | ❌ | ❌ | `none` |
+| [04_A3_priority_index.mp4](./results/videos/04_A3_priority_index.mp4) | ❌ | ❌ | ✅ | ❌ | `none` |
+| [05_fast_flood.mp4](./results/videos/05_fast_flood.mp4) | ❌ | ❌ | ❌ | ✅ | `fast-flood` |
+| [06_full_smart_config.mp4](./results/videos/06_full_smart_config.mp4) | ✅ | ✅ | ✅ | ✅ | `none` |
+| [07_comm_failure.mp4](./results/videos/07_comm_failure.mp4) | ❌ | ❌ | ❌ | ❌ | `comm-failure` |
+
+Ces 7 scénarios ne sont pas exhaustifs — de nombreuses autres combinaisons peuvent 
+être testées en activant ou désactivant librement les stratégies A1, A2, A3 et A4, 
+et en choisissant un type de scénario différent (`none`, `comm-failure`, `fast-flood`).
+
+### 🎬 Génération des vidéos de simulation
+
+Les vidéos ont été générées directement depuis NetLogo à l'aide d'une procédure 
+dédiée (`export-video-script`) qui automatise la conversion des captures d'écran 
+en fichier vidéo `.mp4`.
+
+### Fonctionnement
+
+1. **Pendant la simulation**, NetLogo exporte une image `.png` à intervalles 
+   réguliers dans le dossier `simulation_images_for_videos/`.
+
+2. **À la fin de la simulation**, la procédure `export-video-script` génère 
+   automatiquement un script `.bat` (`conversion_of_simulation_images_to_video.bat`) 
+   qui utilise **ffmpeg** pour assembler les images en vidéo :
+   - Cadence : **3 images par seconde**
+   - Format de sortie : `.mp4` (codec H.264, compatible tous lecteurs)
+   - Les fichiers `.png` sont automatiquement supprimés après conversion.
+
+3. **Exécuter le script** : double-cliquer sur 
+   `conversion_of_simulation_images_to_video.bat` pour lancer la conversion.
+
+### Prérequis
+
+- **ffmpeg** doit être installé et accessible depuis la ligne de commande.
+  Téléchargement : [https://ffmpeg.org/download.html](https://ffmpeg.org/download.html)
+
+> ⚠️ Avant d'utiliser cette procédure, modifier le chemin `base-path` 
+> dans le script pour correspondre à votre installation locale.
+
+> 💡 Une fois la vidéo générée, **renommer le fichier** selon la configuration 
+> simulée (ex: `01_baseline_evacuation.mp4`, `02_A1_civilian_signals.mp4`, etc.) 
+> avant de lancer une nouvelle simulation, afin d'éviter que la vidéo suivante 
+> n'écrase la précédente.
 
 ---
 
