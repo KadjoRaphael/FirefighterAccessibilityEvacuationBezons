@@ -66,9 +66,9 @@ Description of each available parameter:
 **What-If Scenarios**
 
 - `scenario-type`: perturbation scenario to activate:
-  - `none` — progressive flood under nominal conditions, used as a reference
-  - `comm-failure` — all formal alert channels (radio, app) are disabled, forcing the system to operate without institutional communication
-  - `fast-flood` — water rise accelerated by 50%, simulating a high-intensity flood event
+  - `none`- progressive flood under nominal conditions, used as a reference
+  - `comm-failure`- all formal alert channels (radio, app) are disabled, forcing the system to operate without institutional communication
+  - `fast-flood`- water rise accelerated by 50%, simulating a high-intensity flood event
 
 **Operational Strategies (A1–A4)**
 
@@ -219,7 +219,7 @@ Each video corresponds to a specific configuration of the operational strategies
 | [06_full_smart_config.mp4](./results/videos/06_full_smart_config.mp4) | ✅ | ✅ | ✅ | ✅ | `none` |
 | [07_comm_failure.mp4](./results/videos/07_comm_failure.mp4) | ❌ | ❌ | ❌ | ❌ | `comm-failure` |
 
-These 7 scenarios are not exhaustive — many other combinations can be tested by freely enabling or disabling strategies A1, A2, A3 and A4, and by choosing a different scenario type (`none`, `comm-failure`, `fast-flood`).
+These 7 scenarios are not exhaustive - many other combinations can be tested by freely enabling or disabling strategies A1, A2, A3 and A4, and by choosing a different scenario type (`none`, `comm-failure`, `fast-flood`).
 
 ### 🎬 Generating Simulation Videos
 
