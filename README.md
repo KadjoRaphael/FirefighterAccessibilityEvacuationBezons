@@ -255,10 +255,12 @@ This work was carried out as part of a CIFRE PhD thesis conducted at the Departm
 
 ## Associated Publications
 
-This model is derived from the following work. If you use or adapt it, please cite the corresponding reference:
+This model is derived from the following doctoral work. 
+If you use or adapt it, please cite:
 
-> **KOBENAN, K. R.** (2026). *Multi-risk analysis, forecasting and optimisation of firefighter interventions in the Val-d'Oise*.
-> [Doctoral thesis, University of Le Havre Normandie].
+> **KOBENAN, K. R.** (2026). Analyse multi-risques, prévision et 
+optimisation des interventions des pompiers dans le Val-d'Oise.
+> [Thèse de doctorat, Université Le Havre Normandie].
 
 ---
 
