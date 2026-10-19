@@ -11,7 +11,7 @@ It incorporates realistic resident behaviours such as reaction time, transport m
 
 ## Quick Start
 
-Clone the repository and open the `.nlogo` file with NetLogo 6.x.
+Clone the repository and open the `.nlogo` file with NetLogo 6.4 or higher.
 
 > ⚠️ **Do not open this file with a version of NetLogo earlier than 6.** Some features may be lost.
 
