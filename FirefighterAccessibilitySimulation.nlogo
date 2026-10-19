@@ -5,6 +5,7 @@
 
 extensions [ gis csv table ]
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;; BREEDS ;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -135,6 +136,12 @@ firetrucks-own [
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 globals [
+  ; ============================================================
+  ; AUTOMATED / REPRODUCIBLE EXPERIMENTS (BehaviorSpace)
+  ; ============================================================
+  experiment-seed          ; Explicit random seed for reproducible runs (e.g., 1..50)
+  behaviorspace-mode?      ; true = automatic runs; false = normal interactive use
+
   ev_times                  ; List of evacuation times (in minutes) for all evacuated agents
   mouse-was-down?           ; Tracks previous mouse state for click detection
   road_network              ; GIS dataset: road network shapefile
@@ -823,7 +830,7 @@ to update-road-obstructions
     let mid-patch patch mid-x mid-y
     if mid-patch != nobody [
       let fc [floodClass] of mid-patch
-      let wd max list ([depth] of mid-patch) ([waterDepth] of mid-patch)
+      let wd [depth] of mid-patch
       ; Progressively reduce capacity with increasing depth
       if wd > 0.1 and wd <= 0.3 [ set road-capacity-factor max list 0.6 (road-capacity-factor - 0.03) ]
       if wd > 0.3 and wd <= 0.6 [ set road-capacity-factor max list 0.3 (road-capacity-factor - 0.08) ]
@@ -882,7 +889,7 @@ to update-road-status
   ask roads [
     let p patch mid-x mid-y
     if p != nobody [
-      let water-level max list ([depth] of p) ([waterDepth] of p)
+      let water-level [depth] of p
       if water-level > 0.2 and [floodClass] of p >= 2 [ set nb-inondees nb-inondees + 1 ]
     ]
   ]
@@ -931,7 +938,7 @@ to-report firetruck-detects-congestion? [ truck-path ]
           if [road-capacity-factor] of r < (0.35 * proximity-factor)   [ set detected? true ]
           let mid-p patch [mid-x] of r [mid-y] of r
           if mid-p != nobody [
-            if [waterDepth] of mid-p > (0.4 * proximity-factor)        [ set detected? true ]
+            if [depth] of mid-p > (0.4 * proximity-factor)             [ set detected? true ]
             if [water-rise-rate] of mid-p > flood-rise-threshold        [ set detected? true ]
             if [predicted-depth] of mid-p > (0.5 * proximity-factor)   [ set detected? true ]
             ; A1: also detect based on civilian flood signal
@@ -956,7 +963,7 @@ end
 to civilians-broadcast-flood-signals
   if not a1-civilian-signal? [ stop ]
   ; Stationary residents in water broadcast a signal on their current patch
-  ask residents with [ not evacuated? and [waterDepth] of patch-here > 0.3 ] [
+  ask residents with [ not evacuated? and [depth] of patch-here > 0.3 ] [
     ask patch-here [
       set civilian-flood-signal min list 5.0 (civilian-flood-signal + 0.35)
     ]
@@ -964,7 +971,7 @@ to civilians-broadcast-flood-signals
   ]
   ; Pedestrians also broadcast on their current patch and along their upcoming path
   ask pedestrians with [ not evacuated? ] [
-    if [waterDepth] of patch-here > 0.3 [
+    if [depth] of patch-here > 0.3 [
       ask patch-here [
         set civilian-flood-signal min list 5.0 (civilian-flood-signal + 0.40)
       ]
@@ -985,7 +992,7 @@ to civilians-broadcast-flood-signals
             if r != nobody [
               let mid-p patch [mid-x] of r [mid-y] of r
               if mid-p != nobody [
-                if [waterDepth] of mid-p > 0.4 [
+                if [depth] of mid-p > 0.4 [
                   ask mid-p [
                     set civilian-flood-signal min list 5.0 (civilian-flood-signal + 0.25)
                   ]
@@ -1920,19 +1927,28 @@ end
 
 
 ; Selects the highest-priority victim from a pool based on the accessibility index (A3).
-; If A3 is active and the index is low, isolated (magenta) or high-risk (floodClass >= 3) victims
-; are prioritized over the nearest victim.
+; A3 is activated when accessibility begins to degrade, rather than only under extreme values.
+; Thresholds are calibrated to the observed operating range of the corrected model:
+;   - accessibility-index < 75 : critical accessibility -> isolated victims first
+;   - accessibility-index < 90 : degraded accessibility -> severe flood victims first
+;   - otherwise               : nearest victim first
+; This preserves the intended A3 logic while avoiding a practically unreachable trigger.
 to-report pick-priority-victim [ pool src ]
   if not any? pool [ report nobody ]
+
   ifelse a3-priority-index? [
-    ifelse accessibility-index < 50 and any? pool with [ color = magenta ] [
+    let a3-critical-threshold 75
+    let a3-degraded-threshold 90
+
+    ifelse accessibility-index < a3-critical-threshold
+           and any? pool with [ color = magenta ] [
       ; Critical state: prioritize isolated victims
       set cum-index-driven-prioritizations cum-index-driven-prioritizations + 1
       report min-one-of (pool with [ color = magenta ]) [ distance src ]
     ] [
-      ifelse accessibility-index < 70
+      ifelse accessibility-index < a3-degraded-threshold
              and any? pool with [ [floodClass] of patch-here >= 3 ] [
-        ; Degraded state: prioritize severely flooded areas
+        ; Degraded state: prioritize victims in severely flooded areas
         set cum-index-driven-prioritizations cum-index-driven-prioritizations + 1
         report min-one-of (pool with [ [floodClass] of patch-here >= 3 ]) [ distance src ]
       ] [
@@ -2663,7 +2679,7 @@ end
 ; they are converted to pedestrian agents and continue on foot.
 to update-modal-choice
   ask car-drivers with [ not evacuated? ] [
-    let local-depth [waterDepth] of patch-here
+    let local-depth [depth] of patch-here
     if local-depth > 0.3 [
       set can-drive? false
       let my-path path  let my-int current_int
@@ -2690,7 +2706,7 @@ end
 ; Stops if water depth exceeds 0.3 m (driver should have converted to pedestrian already).
 to move-car-drivers
   ask car-drivers with [ not evacuated? ] [
-    if [waterDepth] of patch-here > 0.3 [ stop ]
+    if [depth] of patch-here > 0.3 [ stop ]
     if dest_int = nobody [ stop ]
     if current_int = dest_int [ mark-evacuated  stop ]
     if moving? = false and not empty? path [
@@ -2857,14 +2873,12 @@ to trigger-what-if-scenario
     output-print "WHAT-IF: communication failure - all channels disabled."
   ]
   if scenario-type = "fast-flood" [
-    ; Accelerate flood depth by 50% and reclassify all flood patches
-    ask patches with [ floodClass >= 1 ] [
+    ; Increase the final raster flood depth by 50%.
+    ; Current depth and floodClass still evolve progressively in go.
+    ask patches with [ waterDepth > 0 ] [
       set waterDepth waterDepth * 1.5
-      ifelse waterDepth < 0.5 [ set floodClass 1 ] [
-      ifelse waterDepth < 1.0 [ set floodClass 2 ] [
-      ifelse waterDepth < 2.0 [ set floodClass 3 ] [ set floodClass 4 ]]]
     ]
-    recolor-flood-classes-singleband
+    set flood-patches-cache patches with [ waterDepth > 0 ]
     output-print "WHAT-IF: accelerated flooding (+50%)."
   ]
 end
@@ -3098,10 +3112,49 @@ end
 ;; SETUP PHASES: LOAD 1 / 2 / 3
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+; ============================================================
+; ONE-COMMAND SETUP FOR AUTOMATED EXPERIMENTS
+; ============================================================
+; BehaviorSpace should call: setup-experiment
+; This replaces the three manual clicks load1 -> load2 -> load3.
+to setup-experiment
+  load1
+  load2
+  load3
+  set simulation-paused? false
+  if behaviorspace-mode? [ set record-video? false ]
+  reset-ticks
+end
+
+
 ; Phase 1: Initializes all globals, loads GIS data, network, shelters, and flood raster.
 ; Must be called first before load2 and load3.
 to load1
+  ; Preserve BehaviorSpace-controlled values across clear-all.
+  let saved-seed experiment-seed
+  let saved-behaviorspace-mode behaviorspace-mode?
+
+  ; When LOAD1 is clicked manually, a global that has not yet been assigned
+  ; can still contain NetLogo's default numeric value 0.  Normalise it to
+  ; a real boolean before it is used by IFELSE.  BehaviorSpace itself sets
+  ; behaviorspace-mode? to true before setup-experiment is executed.
+  if not is-boolean? saved-behaviorspace-mode [
+    set saved-behaviorspace-mode false
+  ]
+
   ca  clear-all-plots
+
+  set experiment-seed saved-seed
+  set behaviorspace-mode? saved-behaviorspace-mode
+
+  ; Reproducible stochastic initialization.
+  ifelse behaviorspace-mode? [
+    random-seed experiment-seed
+  ] [
+    set experiment-seed new-seed
+    random-seed experiment-seed
+  ]
+
   ask patches [ set pcolor white ]
   ; Reset all counters and state variables
   set ev_times []
@@ -3150,6 +3203,8 @@ to load1
 
   ; Print active improvement configuration to output
   output-print "============================================"
+  output-print (word "SEED: " experiment-seed)
+  output-print (word "BEHAVIORSPACE MODE: " behaviorspace-mode?)
   output-print (word "CONFIG: "
     ifelse-value a1-civilian-signal?    ["A1-ON "]["A1-OFF "]
     ifelse-value a2-shelter-saturation? ["A2-ON "]["A2-OFF "]
@@ -3192,9 +3247,14 @@ to load3
   setup-reinforcement-posts
   trigger-what-if-scenario
   output-print "SETUP COMPLETE (3/3)!"
-  ;Automatically starts video recording
-  start-recording
-  beep
+
+  ; Avoid thousands of PNG frames during BehaviorSpace campaigns.
+  ifelse behaviorspace-mode? [
+    set record-video? false
+  ] [
+    start-recording
+    beep
+  ]
 end
 
 
@@ -3226,7 +3286,7 @@ to init-evacuation-plot
   set-current-plot-pen "Still Exposed"  plotxy 0 0
 end
 
-; Updates the evacuation progress plot with current safe and exposed agent counts
+; Updates the evacuation progress plot with current safe and CURRENTLY exposed agent counts
 to update-evacuation-plot
   set-current-plot "Evacuation Progress"
   set-plot-y-range 0 (max list 1 total-population)
@@ -3310,11 +3370,18 @@ end
 ; Each tick represents 60 seconds of simulated time.
 ; Runs until time-min >= 60 (1 hour), then exports results and stops.
 to go
-  if simulation-paused? [ stop ]   ; Pause guard (reinforcement prompt)
+  if simulation-paused? [ stop ]   ; Pause guard (manual mode only)
+
+  ; Safety guard if GO is called after the 60-minute horizon.
   if time-min >= 60 [
-    export-results
-    finalize-display
-    stop-recording 
+    update-road-status
+    update-accessibility-metrics
+    if not behaviorspace-mode? [
+      finalize-display
+      stop-recording
+      export-results
+    ]
+    set record-video? false
     stop
   ]
 
@@ -3375,9 +3442,13 @@ to go
 
   if ticks mod flood-update-interval = 0 [ update-water-rise-rates ]
 
-  ; Accumulate time-in-water for agents currently standing in water (depth >= Hc)
-  let wet-agents active-agents with [ [waterDepth] of patch-here >= Hc ]
-  ask wet-agents [ set time_in_water time_in_water + tick_to_sec ]
+  ; Track each active evacuation agent's maximum encountered depth.
+  ; Accumulate time-in-water only when CURRENT depth reaches the exposure threshold Hc.
+  ask active-agents [
+    let local-depth [depth] of patch-here
+    if local-depth > max_depth_agent [ set max_depth_agent local-depth ]
+    if local-depth >= Hc [ set time_in_water time_in_water + tick_to_sec ]
+  ]
 
   ; --- RESIDENT MOVEMENT PHASE 1: Move toward initial intersection ---
   ask residents with [ moving? = false and evacuated? = false and miltime <= ticks ] [
@@ -3454,17 +3525,10 @@ to go
     ]
   ]
 
-  ; Residents moving in dry zone → auto-evacuated (reached safety)
-  ask residents with [
-    evacuated? = false and decision = 1 and moving? = true
-    and [floodClass] of patch-here = 0
-  ] [ mark-evacuated ]
-
-  ; Pedestrians in dry zone → auto-evacuated
-  ask active-peds with [
-    [floodClass] of patch-here = 0
-  ] [ mark-evacuated ]
-
+  ; IMPORTANT:
+  ; Crossing a dry patch does NOT mean that an evacuation is completed.
+  ; Residents/pedestrians are marked safe only when they actually reach
+  ; their designated shelter (or when a firefighter rescue is completed).
   ; Move civilian flow agents (parents, workers, relatives)
   ask parents   [ move-civilian-flow ]
   ask workers   [ move-civilian-flow ]
@@ -3498,24 +3562,31 @@ to go
       crowd >= saturation-threshold and road-capacity-factor >= 0.3 ] > 0 [
       set cum-congestion-events cum-congestion-events + 1 ]
   ]
-  if ticks mod 60 = 0 [ auto-adjust-parameters ]      ; A4: adjust crowd-weight dynamically
+  if ticks mod 5 = 0 [ auto-adjust-parameters ]       ; A4: adjust crowd-weight dynamically every 5 ticks
 
   if count firetrucks > 0 [ continuous-reroute-firetrucks ]    ; Reroute trucks detecting congestion
   if ticks mod 15 = 0 [ check-shelter-saturation-reroute ]     ; Reroute trucks to unsaturated shelters
   if ticks mod access-time-check-interval = 0 [ check-access-time-trigger-reinforcements ]  ; Auto-reinforcement check
   if ticks mod 30 = 0 [ cleanup-claimed-victims ]     ; Remove stale victim claims
 
-  ; --- REINFORCEMENT TRIGGER ALERT ---
-  ; Pause simulation and alert user that main station is overwhelmed
+  ; --- REINFORCEMENT TRIGGER ---
+  ; Automatic in BehaviorSpace; interactive prompt retained in manual mode.
   if not reinforcement-activated and not reinforcement-alert-shown [
     if time-min >= reinforcement-trigger-min [
-      set reinforcement-alert-shown true  set simulation-paused? true
-      output-print "========================================="
-      output-print "ALERT: Main fire station overwhelmed!"
-      output-print (word "Time: " precision time-min 1 " min")
-      output-print ">>> Click 'Activate Reinforcements' then GO."
-      output-print "========================================="
-      stop
+      set reinforcement-alert-shown true
+      ifelse behaviorspace-mode? [
+        activate-reinforcements
+        output-print (word "AUTO REINFORCEMENTS at " precision time-min 1
+          " min | seed=" experiment-seed)
+      ] [
+        set simulation-paused? true
+        output-print "========================================="
+        output-print "ALERT: Main fire station overwhelmed!"
+        output-print (word "Time: " precision time-min 1 " min")
+        output-print ">>> Click 'Activate Reinforcements' then GO."
+        output-print "========================================="
+        stop
+      ]
     ]
   ]
 
@@ -3526,24 +3597,33 @@ to go
   if ticks mod 12 = 0 [ update-accessibility-metrics ]  ; Update A3 accessibility index
   if ticks mod 12 = 0 [ update-evacuation-plot ]         ; Update evacuation progress chart
   if ticks mod 60 = 0 [ update-accessibility-plot ]      ; Update accessibility chart
-  
+
   tick
+
+  ; Finalize exactly at the 60-minute horizon so BehaviorSpace reads fresh metrics.
+  if time-min >= 60 [
+    update-road-status
+    update-accessibility-metrics
+    if not behaviorspace-mode? [
+      finalize-display
+      stop-recording
+      export-results
+    ]
+    set record-video? false
+    stop
+  ]
+
   ; If frame capture is active, export the current view as a PNG file.
   ; The output path is built automatically from the base directory and the
   ; config-folder-name reporter, which resolves to the correct subfolder
   ; based on the active improvement flags (A1–A4) and scenario type.
   ; Files are numbered from frame_10001.png onward to guarantee correct
   ; chronological ordering when assembling the video with ffmpeg.
-  ; NOTE FOR USERS: NetLogo saves frames relative to the .nlogo file location.
-  ; The folder "simulation_images_for_videos" must exist in the same directory
-  ; as the .nlogo file. Create it manually before running the simulation.
-  ; If you prefer an absolute path, replace the folder name below with your
-  ; local path, e.g: "C:/Users/YourName/YourProject/simulation_images_for_videos/"
-  if record-video? [
-    let frame-name (word "simulation_images_for_videos/frame_"
+  if record-video? and not behaviorspace-mode? [
+    let frame-name (word "C:/Users/rapha/OneDrive/SimulationPompierNetLogo/Evacuation_Pompiers/FirefighterAccessibilityEvacuationBezons/simulation_images_for_videos/frame_"
       (word (10000 + ticks)) ".png")
     carefully [ export-view frame-name ]
-    [ output-print "WARNING: folder missing - check simulation_images_for_videos/ exists next to the .nlogo file" ]
+    [ output-print "WARNING: folder missing - check Simulation_images_for_videos exists" ]
   ]
 end
 
@@ -3574,10 +3654,11 @@ to-report self-evacuated-count
          count pedestrians with [ evacuated? = true and rescued-by-firefighters? = false ]
 end
 
-; Count of non-evacuated agents currently in flooded zones
+; Count of all evacuation-population agents that have not yet reached safety,
+; regardless of whether their current patch is dry or flooded.
 to-report non-evacuated-count
-  report count residents  with [ evacuated? = false and [floodClass] of patch-here >= 1 ] +
-         count pedestrians with [ evacuated? = false and [floodClass] of patch-here >= 1 ]
+  report count residents  with [ evacuated? = false ] +
+         count pedestrians with [ evacuated? = false ]
 end
 
 ; Percentage of total population rescued by firetrucks
@@ -3647,19 +3728,40 @@ to-report firetruck-reroute-rate
   report precision (cum-reroutes / max list 1 count firetrucks) 2
 end
 
-; Count of agents currently in flooded zones and not yet evacuated
+; Count of agents CURRENTLY exposed to significant water and not yet evacuated.
+; Exposure is defined consistently with time_in_water: current depth >= Hc.
+; NOTE: this is a state-at-time-t indicator, not a cumulative "ever exposed" count.
 to-report exposed-count
-  report count residents  with [ evacuated? = false and [floodClass] of patch-here >= 1 ] +
-         count pedestrians with [ evacuated? = false and [floodClass] of patch-here >= 1 ]
+  report count residents  with [ evacuated? = false and [depth] of patch-here >= Hc ] +
+         count pedestrians with [ evacuated? = false and [depth] of patch-here >= Hc ]
 end
 
-; Percentage of total population currently exposed to flooding
+; Explicit alias for clarity in analysis/output.
+to-report current-exposed-count
+  report exposed-count
+end
+
+; Percentage of the evacuation population currently exposed (depth >= Hc)
 to-report pct-exposed
   if total-population = 0 [ report 0 ]
   report precision (100 * exposed-count / total-population) 1
 end
 
-; Count of agents who have successfully evacuated
+; Cumulative count of agents that have experienced depth >= Hc at least once.
+; time_in_water is preserved when a resident becomes a pedestrian.
+to-report ever-exposed-count
+  report count residents  with [ time_in_water > 0 ] +
+         count pedestrians with [ time_in_water > 0 ]
+end
+
+; Percentage of the evacuation population ever exposed to depth >= Hc
+to-report pct-ever-exposed
+  if total-population = 0 [ report 0 ]
+  report precision (100 * ever-exposed-count / total-population) 1
+end
+
+; Count of agents who have successfully evacuated.
+; evacuated? is set only by actual shelter arrival or firefighter rescue.
 to-report safe-count
   report count residents  with [ evacuated? = true ] +
          count pedestrians with [ evacuated? = true ]
@@ -3857,33 +3959,40 @@ to-report active-config-label
     "| " scenario-type)
 end
 
-; Mean time in water (seconds) across all non-evacuated agents
+; Unique identifier for pairing configurations across the same random seed.
+to-report experiment-id
+  report (word active-config-label "_seed_" experiment-seed)
+end
+
+; Mean cumulative time in water (seconds) among agents that were actually exposed
+; at least once (time_in_water > 0), whether or not they are already safe at the end.
 to-report mean-exposure-time
   let exposed (turtle-set
-    residents   with [ evacuated? = false ]
-    pedestrians with [ evacuated? = false ])
+    residents   with [ time_in_water > 0 ]
+    pedestrians with [ time_in_water > 0 ])
   if not any? exposed [ report 0 ]
   report precision (mean [time_in_water] of exposed) 1
 end
 
-; Maximum time in water (seconds) across all non-evacuated agents
+; Maximum cumulative time in water (seconds) among agents ever exposed
 to-report max-exposure-time
   let exposed (turtle-set
-    residents   with [ evacuated? = false ]
-    pedestrians with [ evacuated? = false ])
+    residents   with [ time_in_water > 0 ]
+    pedestrians with [ time_in_water > 0 ])
   if not any? exposed [ report 0 ]
   report precision (max [time_in_water] of exposed) 1
 end
 
-; Count of non-evacuated agents whose time in water has exceeded the critical threshold Tc
+; Cumulative count of agents whose water-exposure duration exceeded Tc,
+; whether they are still evacuating or have subsequently reached safety.
 to-report count-agents-over-Tc
-  report count residents  with [ evacuated? = false and time_in_water > Tc ] +
-         count pedestrians with [ evacuated? = false and time_in_water > Tc ]
+  report count residents  with [ time_in_water > Tc ] +
+         count pedestrians with [ time_in_water > Tc ]
 end
 
-; Percentage of exposed agents exceeding the critical water exposure threshold Tc
+; Percentage of ever-exposed agents whose cumulative exposure exceeded Tc
 to-report pct-agents-over-Tc
-  let exposed exposed-count
+  let exposed ever-exposed-count
   if exposed = 0 [ report 0 ]
   report precision (100 * count-agents-over-Tc / exposed) 1
 end
@@ -3936,23 +4045,37 @@ end
 ; Exports all key simulation results to a CSV file at the end of the run.
 ; Each row is an Indicator,Value pair for easy analysis.
 to export-results
-  let filename "simulation_outputs.csv"
+  ; BehaviorSpace writes its own table; avoid competing file writes there.
+  if behaviorspace-mode? [ stop ]
+
+  let filename (word "simulation_outputs_seed_" experiment-seed ".csv")
+  if file-exists? filename [ file-delete filename ]
   file-open filename
 
   ; Header
   file-print "Indicator,Value"
 
-  ; Configuration
+  ; Run identity
+  file-print (word "Seed," experiment-seed)
+  file-print (word "Experiment ID," experiment-id)
   file-print (word "Configuration," active-config-label)
   file-print (word "Scenario," scenario-type)
   file-print (word "Simulation time (min)," precision time-min 1)
 
   ; Population
   file-print (word "Total population," total-population)
-  file-print (word "Evacuated (%)," pct-safe)
+  file-print (word "Safe count (shelter/rescue)," safe-count)
+  file-print (word "Evacuated safely (%)," pct-safe)
+  file-print (word "Currently exposed count (depth >= Hc)," exposed-count)
+  file-print (word "Currently exposed (%)," pct-exposed)
+  file-print (word "Ever exposed count," ever-exposed-count)
+  file-print (word "Ever exposed (%)," pct-ever-exposed)
+  file-print (word "Non-evacuated count," non-evacuated-count)
   file-print (word "Non-evacuated (%)," per-non-evacuated)
+  file-print (word "Rescued count," rescued-count)
   file-print (word "Rescued by firetrucks (%)," per-rescued)
-  file-print (word "Exposed (%)," pct-exposed)
+  file-print (word "Cumulative rescued," cum_rescued)
+  file-print (word "Cumulative self evacuated," cum_self_evacuated)
 
   ; Timing
   file-print (word "Mean evacuation time (min)," precision mean-ev-time 2)
@@ -3966,6 +4089,7 @@ to export-results
 
   ; Firetrucks
   file-print (word "Firetruck reroutes," cum-reroutes)
+  file-print (word "Civilian reroutes," cum-civilian-reroutes)
   file-print (word "Blocked trucks," nb-camions-bloques)
   file-print (word "Deliveries completed," cum-trucks-delivered)
 
@@ -3979,6 +4103,18 @@ to export-results
   file-print (word "Accessibility index," accessibility-index)
   file-print (word "Mean rescue delay," mean-rescue-delay)
   file-print (word "Isolated victims," isolated-victims-count)
+
+  ; Strategy-specific counters
+  file-print (word "A1 civilian signals," cum-civilian-flood-signals)
+  file-print (word "A2 shelter civilian reroutes," cum-shelter-saturation-civilian-reroutes)
+  file-print (word "A3 index prioritizations," cum-index-driven-prioritizations)
+  file-print (word "A4 traffic management events," cum-traffic-saturation-managed)
+
+  ; Exposure
+  file-print (word "Mean exposure time among ever-exposed (s)," mean-exposure-time)
+  file-print (word "Maximum exposure time among ever-exposed (s)," max-exposure-time)
+  file-print (word "Agents over Tc," count-agents-over-Tc)
+  file-print (word "Ever-exposed agents over Tc (%)," pct-agents-over-Tc)
 
   ; Scores
   file-print (word "Rescue score," rescue-score)
@@ -4009,18 +4145,18 @@ end
 ;
 ; Note: ffmpeg must be installed and accessible from the command line.
 to export-video-script
-  let base-path ""
-  let bat-file "conversion_of_simulation_images_to_video.bat"
+  let base-path "C:/Users/rapha/OneDrive/SimulationPompierNetLogo/Evacuation_Pompiers/FirefighterAccessibilityEvacuationBezons/"
+  let bat-file (word base-path "conversion_of_simulation_images_to_video.bat")
   file-open bat-file
   file-print "@echo off"
   ; Convert frames to video
   file-print (word "ffmpeg -y -framerate 3 -start_number 10001 -i \""
-    "simulation_images_for_videos/frame_%%05d.png\" "
+    base-path "simulation_images_for_videos/frame_%%05d.png\" "
     "-vf \"format=yuv420p,pad=ceil(iw/2)*2:ceil(ih/2)*2\" "
     "-c:v libx264 \""
-    "simulation_images_for_videos.mp4\"")
+    base-path "simulation_images_for_videos.mp4\"")
   ; Delete all PNG files after video is created
-  file-print "del /Q \"simulation_images_for_videos\\*.png\""
+  file-print (word "del /Q \"" base-path "simulation_images_for_videos\\*.png\"")
   file-print "echo Video created and PNG files deleted."
   file-print "pause"
   file-close
